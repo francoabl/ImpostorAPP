@@ -58,6 +58,10 @@ fun GamePlayScreen(
     val gameState by gameManager.gameState
     var isCardFlipped by remember(player.id) { mutableStateOf(player.isRevealed) }
     
+    // Mantener referencia del jugador actual para la animación
+    var currentDisplayPlayer by remember { mutableStateOf(player) }
+    var pendingPlayer by remember { mutableStateOf<com.example.impostor.model.Player?>(null) }
+    
     // Animation for card flip
     val rotationY by animateFloatAsState(
         targetValue = if (isCardFlipped) 180f else 0f,
@@ -65,8 +69,24 @@ fun GamePlayScreen(
             durationMillis = 600,
             easing = FastOutSlowInEasing
         ),
-        label = "cardFlip"
+        label = "cardFlip",
+        finishedListener = { finalValue ->
+            // Cuando la animación termine completamente (carta boca abajo)
+            if (finalValue == 0f && pendingPlayer != null) {
+                currentDisplayPlayer = pendingPlayer!!
+                pendingPlayer = null
+            }
+        }
     )
+    
+    // Detectar cambio de jugador
+    LaunchedEffect(player.id) {
+        if (player.id != currentDisplayPlayer.id) {
+            // Hay un nuevo jugador, preparar transición
+            pendingPlayer = player
+            isCardFlipped = false
+        }
+    }
     
     Column(
         modifier = Modifier
@@ -123,7 +143,7 @@ fun GamePlayScreen(
             if (rotationY <= 90f) {
                 // Front of card (back side showing nickname)
                 CardBack(
-                    nickname = player.nickname,
+                    nickname = currentDisplayPlayer.nickname,
                     onClick = {
                         isCardFlipped = true
                         gameManager.revealCurrentPlayer()
@@ -132,7 +152,7 @@ fun GamePlayScreen(
             } else {
                 // Back of card (front side showing role)
                 CardFront(
-                    player = player,
+                    player = currentDisplayPlayer,
                     modifier = Modifier.graphicsLayer {
                         this.rotationY = 180f
                     }
