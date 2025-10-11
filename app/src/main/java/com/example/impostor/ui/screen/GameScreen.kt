@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.impostor.manager.GameManager
 import com.example.impostor.model.PlayerRole
+import com.example.impostor.ui.components.CircularProfileImage
 
 @Composable
 fun GameScreen(
@@ -143,7 +144,7 @@ fun GamePlayScreen(
             if (rotationY <= 90f) {
                 // Front of card (back side showing nickname)
                 CardBack(
-                    nickname = currentDisplayPlayer.nickname,
+                    player = currentDisplayPlayer,
                     onClick = {
                         isCardFlipped = true
                         gameManager.revealCurrentPlayer()
@@ -192,7 +193,7 @@ fun GamePlayScreen(
 
 @Composable
 fun CardBack(
-    nickname: String,
+    player: com.example.impostor.model.Player,
     onClick: () -> Unit
 ) {
     Card(
@@ -221,24 +222,34 @@ fun CardBack(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "?",
-                    fontSize = 120.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                // Foto de perfil circular
+                CircularProfileImage(
+                    imageUri = player.profilePhotoUri,
+                    size = 100.dp,
+                    borderWidth = 3.dp,
+                    borderColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
-                    text = nickname,
+                    text = player.nickname,
                     style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer,
                     textAlign = TextAlign.Center
                 )
                 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(24.dp))
+                
+                Text(
+                    text = "?",
+                    fontSize = 80.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                )
+                
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 Text(
                     text = "Toca para revelar",
@@ -294,40 +305,50 @@ fun CardFront(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = if (isImpostor) "💀" else "⭐",
-                    fontSize = 80.sp
+                // Foto de perfil circular
+                CircularProfileImage(
+                    imageUri = player.profilePhotoUri,
+                    size = 80.dp,
+                    borderWidth = 3.dp,
+                    borderColor = textColor
                 )
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 
                 Text(
-                    text = if (isImpostor) "IMPOSTOR" else "PERSONAJE",
+                    text = player.nickname,
                     style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     color = textColor,
                     textAlign = TextAlign.Center
                 )
                 
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = if (isImpostor) "💀" else "⭐",
+                    fontSize = 60.sp
+                )
+                
                 Spacer(modifier = Modifier.height(12.dp))
                 
                 Text(
+                    text = if (isImpostor) "IMPOSTOR" else "PERSONAJE",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor,
+                    textAlign = TextAlign.Center
+                )
+                
+                Spacer(modifier = Modifier.height(8.dp))
+                
+                Text(
                     text = if (isImpostor) "¡Eres el impostor!" else player.character,
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Medium,
                     color = textColor,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.padding(horizontal = 16.dp)
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                Text(
-                    text = player.nickname,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColor.copy(alpha = 0.8f),
-                    textAlign = TextAlign.Center
                 )
             }
         }

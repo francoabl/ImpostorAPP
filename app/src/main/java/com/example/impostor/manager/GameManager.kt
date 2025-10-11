@@ -1,5 +1,6 @@
 package com.example.impostor.manager
 
+import android.net.Uri
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.State
 import com.example.impostor.model.FamousCharacters
@@ -12,7 +13,7 @@ class GameManager {
     private val _gameState = mutableStateOf(GameState())
     val gameState: State<GameState> = _gameState
     
-    fun addPlayer(nickname: String) {
+    fun addPlayer(nickname: String, profilePhotoUri: Uri? = null) {
         if (nickname.isBlank()) return
         
         val currentPlayers = _gameState.value.players
@@ -22,7 +23,8 @@ class GameManager {
         
         val newPlayer = Player(
             id = UUID.randomUUID().toString(),
-            nickname = nickname.trim()
+            nickname = nickname.trim(),
+            profilePhotoUri = profilePhotoUri
         )
         
         _gameState.value = _gameState.value.copy(

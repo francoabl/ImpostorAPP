@@ -1,0 +1,25 @@
+// ALTERNATIVA SI LOS ICONOS EXTENDIDOS NO FUNCIONAN
+// Reemplazar PhotoPickerDialog.kt con estos iconos básicos:
+
+// Para cámara, usar:
+// Icons.Default.Add (con texto "Cámara")
+
+// Para galería, usar: 
+// Icons.Default.Folder (con texto "Galería")
+
+// Ejemplo:
+/*
+Icon(
+    imageVector = Icons.Default.Add,
+    contentDescription = "Tomar foto",
+    tint = MaterialTheme.colorScheme.primary,
+    modifier = Modifier.size(24.dp)
+)
+
+Icon(
+    imageVector = Icons.Default.Folder,
+    contentDescription = "Galería", 
+    tint = MaterialTheme.colorScheme.primary,
+    modifier = Modifier.size(24.dp)
+)
+*/

@@ -1,5 +1,6 @@
 package com.example.impostor.ui.screen
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
@@ -28,6 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.impostor.manager.GameManager
 import com.example.impostor.model.Player
+import com.example.impostor.ui.components.CircularProfileImage
+import com.example.impostor.ui.components.PhotoPickerDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,6 +41,8 @@ fun PlayerSetupScreen(
 ) {
     val gameState by gameManager.gameState
     var newPlayerName by remember { mutableStateOf("") }
+    var selectedPhotoUri by remember { mutableStateOf<Uri?>(null) }
+    var showPhotoDialog by remember { mutableStateOf(false) }
     val keyboardController = LocalSoftwareKeyboardController.current
     
     Column(
@@ -75,47 +81,83 @@ fun PlayerSetupScreen(
             Column(
                 modifier = Modifier.padding(16.dp)
             ) {
-                OutlinedTextField(
-                    value = newPlayerName,
-                    onValueChange = { newPlayerName = it },
-                    label = { Text("Nickname del jugador") },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "Jugador"
+                // Sección de foto y datos del jugador
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Foto de perfil
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProfileImage(
+                            imageUri = selectedPhotoUri,
+                            size = 80.dp
                         )
-                    },
-                    trailingIcon = {
-                        if (newPlayerName.isNotBlank()) {
-                            IconButton(
-                                onClick = {
-                                    gameManager.addPlayer(newPlayerName)
+                        
+                        TextButton(
+                            onClick = { showPhotoDialog = true }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.PhotoCamera,
+                                contentDescription = "Agregar foto",
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Foto",
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.width(16.dp))
+                    
+                    // Campo de texto expandido
+                    OutlinedTextField(
+                        value = newPlayerName,
+                        onValueChange = { newPlayerName = it },
+                        label = { Text("Nickname del jugador") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "Jugador"
+                            )
+                        },
+                        trailingIcon = {
+                            if (newPlayerName.isNotBlank()) {
+                                IconButton(
+                                    onClick = {
+                                        gameManager.addPlayer(newPlayerName, selectedPhotoUri)
+                                        newPlayerName = ""
+                                        selectedPhotoUri = null
+                                        keyboardController?.hide()
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Agregar jugador"
+                                    )
+                                }
+                            }
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            imeAction = ImeAction.Done
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                if (newPlayerName.isNotBlank()) {
+                                    gameManager.addPlayer(newPlayerName, selectedPhotoUri)
                                     newPlayerName = ""
+                                    selectedPhotoUri = null
                                     keyboardController?.hide()
                                 }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Agregar jugador"
-                                )
                             }
-                        }
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            if (newPlayerName.isNotBlank()) {
-                                gameManager.addPlayer(newPlayerName)
-                                newPlayerName = ""
-                                keyboardController?.hide()
-                            }
-                        }
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
+                        ),
+                        modifier = Modifier.weight(1f),
+                        singleLine = true
+                    )
+                }
                 
                 if (gameState.players.size < 3) {
                     Text(
@@ -216,6 +258,16 @@ fun PlayerSetupScreen(
             )
         }
     }
+    
+    // Diálogo para seleccionar foto
+    if (showPhotoDialog) {
+        PhotoPickerDialog(
+            onImageSelected = { uri ->
+                selectedPhotoUri = uri
+            },
+            onDismiss = { showPhotoDialog = false }
+        )
+    }
 }
 
 @Composable
@@ -240,12 +292,14 @@ fun PlayerItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Jugador",
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                    modifier = Modifier.size(24.dp)
+                // Mostrar foto de perfil o ícono por defecto
+                CircularProfileImage(
+                    imageUri = player.profilePhotoUri,
+                    size = 40.dp,
+                    borderWidth = 1.dp,
+                    borderColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
+                
                 Spacer(modifier = Modifier.width(12.dp))
                 Text(
                     text = player.nickname,

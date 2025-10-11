@@ -1,8 +1,11 @@
 package com.example.impostor.model
 
+import android.net.Uri
+
 data class Player(
     val id: String = "",
     val nickname: String = "",
+    val profilePhotoUri: Uri? = null,
     val role: PlayerRole = PlayerRole.NOT_ASSIGNED,
     val character: String = "",
     val isRevealed: Boolean = false
