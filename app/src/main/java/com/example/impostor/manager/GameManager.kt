@@ -99,15 +99,26 @@ class GameManager {
         val nextIndex = currentState.currentPlayerIndex + 1
         
         if (nextIndex >= currentState.players.size) {
-            // Juego terminado
+            // Todos han revelado sus cartas, ir a la fase de votación
             _gameState.value = currentState.copy(
-                gameFinished = true
+                votingPhase = true
             )
         } else {
             _gameState.value = currentState.copy(
                 currentPlayerIndex = nextIndex
             )
         }
+    }
+    
+    fun startVotingPhase() {
+        _gameState.value = _gameState.value.copy(votingPhase = true)
+    }
+    
+    fun endVotingPhase() {
+        _gameState.value = _gameState.value.copy(
+            votingPhase = false,
+            gameFinished = true
+        )
     }
     
     fun getCurrentPlayer(): Player? {

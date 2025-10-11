@@ -10,7 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.example.impostor.manager.GameManager
 import com.example.impostor.ui.screen.GameScreen
+import com.example.impostor.ui.screen.FinalResultsScreen
 import com.example.impostor.ui.screen.PlayerSetupScreen
+import com.example.impostor.ui.screen.VotingScreen
 import com.example.impostor.ui.theme.ImpostorTheme
 
 class MainActivity : ComponentActivity() {
@@ -33,6 +35,8 @@ fun ImpostorApp() {
     // Determine which screen to show
     val currentScreen = when {
         !gameState.gameStarted -> Screen.PLAYER_SETUP
+        gameState.votingPhase -> Screen.VOTING
+        gameState.gameFinished -> Screen.FINAL_RESULTS
         gameState.gameStarted -> Screen.GAME
         else -> Screen.PLAYER_SETUP
     }
@@ -53,11 +57,29 @@ fun ImpostorApp() {
                     }
                 )
             }
+            Screen.VOTING -> {
+                VotingScreen(
+                    gameManager = gameManager,
+                    onRevealPlayers = {
+                        gameManager.endVotingPhase()
+                    }
+                )
+            }
+            Screen.FINAL_RESULTS -> {
+                FinalResultsScreen(
+                    gameManager = gameManager,
+                    onBackToSetup = {
+                        gameManager.resetGame()
+                    }
+                )
+            }
         }
     }
 }
 
 enum class Screen {
     PLAYER_SETUP,
-    GAME
+    GAME,
+    VOTING,
+    FINAL_RESULTS
 }

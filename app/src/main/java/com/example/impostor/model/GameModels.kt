@@ -22,6 +22,7 @@ data class GameState(
     val currentPlayerIndex: Int = 0,
     val gameStarted: Boolean = false,
     val gameFinished: Boolean = false,
+    val votingPhase: Boolean = false,
     val assignedCharacter: String = ""
 )
 
