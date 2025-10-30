@@ -23,53 +23,6 @@ data class GameState(
     val gameStarted: Boolean = false,
     val gameFinished: Boolean = false,
     val votingPhase: Boolean = false,
-    val assignedCharacter: String = ""
+    val assignedCharacter: String = "",
+    val selectedCategoryId: Int? = null // null = todas las categorías
 )
-
-// Lista de personajes famosos para el juego
-object FamousCharacters {
-    val characters = listOf(
-        // Futbolistas
-        "Lionel Messi",
-        "Cristiano Ronaldo", 
-        "Neymar Jr",
-        "Kylian Mbappé",
-        "Erling Haaland",
-        "Karim Benzema",
-        "Luka Modrić",
-        "Kevin De Bruyne",
-        "Mohamed Salah",
-        "Virgil van Dijk",
-        
-        // Músicos
-        "Taylor Swift",
-        "Ed Sheeran",
-        "Ariana Grande",
-        "Drake",
-        "Billie Eilish",
-        "The Weeknd",
-        "Dua Lipa",
-        "Post Malone",
-        "Olivia Rodrigo",
-        "Harry Styles",
-        
-        // Actores
-        "Leonardo DiCaprio",
-        "Brad Pitt",
-        "Scarlett Johansson",
-        "Robert Downey Jr.",
-        "Emma Stone",
-        "Ryan Reynolds",
-        "Jennifer Lawrence",
-        "Chris Hemsworth",
-        "Margot Robbie",
-        "Tom Holland",
-        
-        // Otros famosos
-        "Elon Musk",
-        "Oprah Winfrey",
-        "Gordon Ramsay",
-        "MrBeast",
-        "PewDiePie"
-    )
-}
